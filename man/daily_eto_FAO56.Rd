@@ -2,7 +2,7 @@
 % Please edit documentation in R/daily_eto_FAO56.R
 \name{daily_eto_FAO56}
 \alias{daily_eto_FAO56}
-\title{Eto calculation based on FAO-56 Penman-Monteith methodology, with data from automatic weather stations (AWS) downloaded and processed in function *daily_download_AWS_INMET*}
+\title{ETo calculation based on FAO-56 Penman-Monteith methodology, with data from automatic weather stations (AWS) downloaded and processed in function *daily_download_AWS_INMET*}
 \usage{
 daily_eto_FAO56(lat, tmin, tmax, tmean, Rs, u2, Patm, RH_max, RH_min, z, date)
 }
@@ -17,7 +17,7 @@ daily_eto_FAO56(lat, tmin, tmax, tmean, Rs, u2, Patm, RH_max, RH_min, z, date)
 
 \item{Rs}{A dataframe with mean daily solar radiation (MJ m-2 day-1).}
 
-\item{u2}{A dataframe with Wind speed at meters high (m s-2).}
+\item{u2}{A dataframe with Wind speed at two meters high (m s-2).}
 
 \item{Patm}{A dataframe with atmospheric Pressure (mB).}
 
@@ -37,7 +37,7 @@ This function will calculate the reference evapotranspiration (ETo) based on FAO
 }
 \examples{
 \dontrun{
-eto<-daily_eto_FAO56(lat, tmin, tmax, tmean, Rs, u2, Patm, RH_max, RH_min, z, date)
+eto <- daily_eto_FAO56(lat, tmin, tmax, tmean, Rs, u2, Patm, RH_max, RH_min, z, date)
 }
 }
 \author{
