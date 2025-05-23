@@ -2,7 +2,7 @@ Package: BrazilMet
 Type: Package
 Title: Download and Processing of Automatic Weather Stations (AWS) Data
         of INMET-Brazil
-Version: 0.3.0
+Version: 0.4.0
 Language: en-US
 Authors@R: c(person(given = "Roberto",
                     family = "Filgueiras",
@@ -20,20 +20,31 @@ Authors@R: c(person(given = "Roberto",
             person(given = "Fernando F.",
                     family = "da Cunha",
                     role = ("aut"),
-                    comment = c(ORCID = "0000-0002-1671-1021")))
-Description: A compilation of functions to download and processing AWS data of INMET-Brazil, with the purpose of reference evapotranspiration (ETo) estimation. The package aims to make meteorological and agricultural data analysis more parsimonious.
+                    comment = c(ORCID = "0000-0002-1671-1021")),
+            person(given = "Arthur T.",
+                    family = "Calegario",
+                    role = ("ctb"),
+                    email = "tcalegario@gmail.com",
+                    comment = c(ORCID = "0000-0002-1921-5234")))
+Description: A collection of functions for downloading and processing automatic weather station (AWS) data from INMET (Brazil’s National Institute of Meteorology), designed to support the estimation of reference evapotranspiration (ETo). The package facilitates streamlined access to meteorological data and aims to simplify analyses in agricultural and environmental contexts.
 License: GPL-3
 Encoding: UTF-8
 Depends: R (>= 4.1.0)
-Imports: stringr, readxl, dplyr(>= 0.3.0.1), tibble
+Imports: stringr, readxl, dplyr(>= 0.3.0.1), tibble, lubridate, sf,
+        stringi, terra
 BugReports: https://github.com/FilgueirasR/BrazilMet/issues
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 NeedsCompilation: no
-Packaged: 2025-03-19 19:03:57 UTC; betof
-Author: Roberto Filgueiras [aut, cre] (<https://orcid.org/0000-0002-0186-8907>),
-  Luan P. Venancio [aut] (<https://orcid.org/0000-0002-5544-8588>),
-  Catariny C. Aleman [aut] (<https://orcid.org/0000-0002-3894-3077>),
-  Fernando F. da Cunha [aut] (<https://orcid.org/0000-0002-1671-1021>)
+Packaged: 2025-05-23 14:26:31 UTC; betof
+Author: Roberto Filgueiras [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-0186-8907>),
+  Luan P. Venancio [aut] (ORCID: <https://orcid.org/0000-0002-5544-8588>),
+  Catariny C. Aleman [aut] (ORCID:
+    <https://orcid.org/0000-0002-3894-3077>),
+  Fernando F. da Cunha [aut] (ORCID:
+    <https://orcid.org/0000-0002-1671-1021>),
+  Arthur T. Calegario [ctb] (ORCID:
+    <https://orcid.org/0000-0002-1921-5234>)
 Maintainer: Roberto Filgueiras <betofilgueiras@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-03-19 19:20:02 UTC
+Date/Publication: 2025-05-23 20:02:07 UTC
