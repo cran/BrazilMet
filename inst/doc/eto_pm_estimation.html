@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>💧 ETo Calculation Based on FAO-56 Penman-Monteith</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">💧 ETo Calculation Based on FAO-56
+Penman-Monteith</h1>
+
+
+
+<div id="reference-evapotranspiration-eto-estimation" class="section level2">
+<h2>🚀 Reference Evapotranspiration (ETo) Estimation</h2>
+<p>This article demonstrates how to use the BrazilMet package to compute
+reference evapotranspiration (ETo) based on the FAO-56 Penman-Monteith
+method, using weather data from INMET automatic stations.</p>
+</div>
+<div id="load-the-package" class="section level2">
+<h2>📦 Load the package</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(BrazilMet)</span></code></pre></div>
+</div>
+<div id="view-available-inmet-stations" class="section level2">
+<h2>🌍 View available INMET stations</h2>
+<p>Before downloading data, you can check the available weather stations
+with:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">see_stations_info</span>()</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co">#&gt; # A tibble: 564 × 8</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co">#&gt;    station_municipality uf    situation_operation latitude_degrees</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="co">#&gt;    &lt;chr&gt;                &lt;chr&gt; &lt;chr&gt;                          &lt;dbl&gt;</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="co">#&gt;  1 Abrolhos             BA    breakdown                     -18.0 </span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="co">#&gt;  2 Acarau               CE    breakdown                      -3.12</span></span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt;  3 Afonso Claudio       ES    operating                     -20.1 </span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt;  4 Agua Boa             MT    operating                     -14.0 </span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt;  5 Agua Clara           MS    operating                     -20.4 </span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt;  6 Aguas Emendadas      DF    operating                     -15.6 </span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt;  7 Aguas Vermelhas      MG    operating                     -15.8 </span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt;  8 Aimores              MG    operating                     -19.5 </span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt;  9 Alegre               ES    operating                     -20.8 </span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; 10 Alegrete             RS    operating                     -29.7 </span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; # ℹ 554 more rows</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; # ℹ 4 more variables: longitude_degrees &lt;dbl&gt;, altitude_m &lt;dbl&gt;,</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; #   operation_start_date &lt;dttm&gt;, station_code &lt;chr&gt;</span></span></code></pre></div>
+</div>
+<div id="download-daily-weather-data" class="section level2">
+<h2>⬇️ Download daily weather data</h2>
+<p>Let’s download daily meteorological data for station A001 between
+January 2023 and December 2024:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">download_AWS_INMET_daily</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">stations   =</span> <span class="fu">c</span>(<span class="st">&quot;A001&quot;</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">start_date =</span> <span class="st">&quot;2023-01-01&quot;</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">end_date   =</span> <span class="st">&quot;2024-12-31&quot;</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>)</span></code></pre></div>
+<p>The resulting data frame includes temperature, solar radiation, wind
+speed, humidity, and atmospheric pressure.</p>
+<p>To keep this article reproducible without depending on the INMET
+server, the data downloaded with the call above are bundled with the
+package and loaded here:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;A001_daily_2023_2024.rds&quot;</span>, <span class="at">package =</span> <span class="st">&quot;BrazilMet&quot;</span>))</span></code></pre></div>
+</div>
+<div id="calculate-daily-eto-using-fao-56" class="section level2">
+<h2>🧠 Calculate daily ETo using FAO-56</h2>
+<p>Station data have occasional sensor failures, and any missing input
+makes ETo <code>NA</code> on that day. <code>fill_gaps()</code> fills
+gaps of up to three days by linear interpolation and flags the filled
+values in <code>*_filled</code> columns:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">fill_gaps</span>(df, <span class="at">max_gap =</span> <span class="dv">3</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="co">#&gt; Filled values (remaining NA): tair_mean_c = 29 (0), tair_min_c = 29 (0), tair_max_c = 29 (0), rh_max_porc = 30 (0), rh_min_porc = 30 (0), ws_2_m_s = 33 (0), patm_mb = 28 (0), sr_mj_m2 = 7 (0)</span></span></code></pre></div>
+<p>Now we use the daily_eto_FAO56() function to estimate daily ETo
+values:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>df<span class="sc">$</span>eto <span class="ot">&lt;-</span> <span class="fu">daily_eto_FAO56</span>(</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">lat    =</span> df<span class="sc">$</span>latitude_degrees,</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">tmin   =</span> df<span class="sc">$</span>tair_min_c,</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">tmax   =</span> df<span class="sc">$</span>tair_max_c,</span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>  <span class="at">tmean  =</span> df<span class="sc">$</span>tair_mean_c,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>  <span class="at">Rs     =</span> df<span class="sc">$</span>sr_mj_m2,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>  <span class="at">u2     =</span> df<span class="sc">$</span>ws_2_m_s,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>  <span class="at">Patm   =</span> df<span class="sc">$</span>patm_mb,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>  <span class="at">RH_max =</span> df<span class="sc">$</span>rh_max_porc,</span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  <span class="at">RH_min =</span> df<span class="sc">$</span>rh_min_porc,</span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="at">z      =</span> df<span class="sc">$</span>altitude_m,</span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>  <span class="at">date   =</span> df<span class="sc">$</span>date</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="plotting-eto-results" class="section level2">
+<h2>📊 Plotting ETo results</h2>
+<p>Below is a basic line plot of daily ETo:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># Ensure date column is in Date format</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>df<span class="sc">$</span>date <span class="ot">&lt;-</span> <span class="fu">as.Date</span>(df<span class="sc">$</span>date)</span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="fu">ggplot</span>(df, <span class="fu">aes</span>(<span class="at">x =</span> date, <span class="at">y =</span> eto)) <span class="sc">+</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">&quot;darkblue&quot;</span>, <span class="at">linewidth =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Reference Evapotranspiration (FAO-56)&quot;</span>,</span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Date&quot;</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;ETo (mm/day)&quot;</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">14</span>) <span class="sc">+</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>),</span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a>    <span class="at">panel.grid.minor =</span> <span class="fu">element_blank</span>()</span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a>  )</span></code></pre></div>
+<p><img role="img" src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="summary" class="section level2">
+<h2>✅ Summary</h2>
+<p>The BrazilMet package allows you to download official INMET weather
+data and compute ETo using the FAO-56 method in a reproducible and
+efficient way. This is essential for irrigation planning, crop modeling,
+and climate-based decision support.</p>
+</div>
+<div id="useful-links" class="section level2">
+<h2>🔗 Useful links</h2>
+<p><a href="https://github.com/FilgueirasR/BrazilMet" class="uri">https://github.com/FilgueirasR/BrazilMet</a></p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

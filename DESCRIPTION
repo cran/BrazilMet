@@ -2,7 +2,7 @@ Package: BrazilMet
 Type: Package
 Title: Download and Processing of Automatic Weather Stations (AWS) Data
         of INMET-Brazil
-Version: 0.4.0
+Version: 0.5.0
 Language: en-US
 Authors@R: c(person(given = "Roberto",
                     family = "Filgueiras",
@@ -32,10 +32,16 @@ Encoding: UTF-8
 Depends: R (>= 4.1.0)
 Imports: stringr, readxl, dplyr(>= 0.3.0.1), tibble, lubridate, sf,
         stringi, terra
+URL: https://github.com/FilgueirasR/BrazilMet,
+        https://filgueirasr.github.io/BrazilMet/
 BugReports: https://github.com/FilgueirasR/BrazilMet/issues
 RoxygenNote: 7.3.2
+Suggests: knitr, rmarkdown, ggplot2, testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+Config/pkgdown: list(destination = "docs")
 NeedsCompilation: no
-Packaged: 2025-05-23 14:26:31 UTC; betof
+Packaged: 2026-10-02 12:28:10 UTC; Roberto
 Author: Roberto Filgueiras [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-0186-8907>),
   Luan P. Venancio [aut] (ORCID: <https://orcid.org/0000-0002-5544-8588>),
@@ -47,4 +53,4 @@ Author: Roberto Filgueiras [aut, cre] (ORCID:
     <https://orcid.org/0000-0002-1921-5234>)
 Maintainer: Roberto Filgueiras <betofilgueiras@gmail.com>
 Repository: CRAN
-Date/Publication: 2025-05-23 20:02:07 UTC
+Date/Publication: 2026-10-02 12:50:02 UTC

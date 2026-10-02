@@ -1,11 +1,11 @@
-![CRAN Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/BrazilMet)
-![CRAN Download Badge](https://cranlogs.r-pkg.org/badges/BrazilMet)
-![CRAN Version](https://www.r-pkg.org/badges/version/BrazilMet)
-
 # BrazilMet
 
 <div class="fluid-row" id="header">
-    <img src='docs/figures/logo_BrazilMet.png' height='150' width='auto' align='right'>
+
+<img src="man/figures/logo_BrazilMet.png" height="120" style="float: right; margin-left: 10px;" />
+    
+![CRAN Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/BrazilMet)
+![CRAN Download Badge](https://cranlogs.r-pkg.org/badges/BrazilMet)
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/FilgueirasR/BrazilMet/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/FilgueirasR/BrazilMet/actions/workflows/R-CMD-check.yaml)
@@ -13,7 +13,7 @@
 
 ## Overview  
 
-**BrazilMet** is an R package designed to facilitate the acquisition and processing of meteorological data from INMET stations. It includes functions for downloading, calculating atmospheric parameters, estimating evapotranspiration, and more.
+**BrazilMet** is an R package designed to facilitate the acquisition and processing of meteorological data from INMET stations. It includes functions for downloading, calculating atmospheric parameters, estimating evapotranspiration, and more. Please, see the package page 🔗 https://filgueirasr.github.io/BrazilMet/
 
 ---
 
@@ -52,6 +52,9 @@
 - Automatic weather station (AWS) metadata.  
 - Selection of AWS stations using an `sf` object.  
 
+### 💧 Water Balance  
+- Sequential water balance (Thornthwaite & Mather, 1955) for daily, weekly, monthly or custom time steps.  
+
 ---
 
 ## ⚡ Installation  
@@ -66,7 +69,7 @@ install.packages("devtools")
 devtools::install_github("FilgueirasR/BrazilMet")
 
 ```
-#  🚀 Usage Example - ETo estimation
+##  🚀 Usage Example - ETo estimation
 
 Here’s a quick example of how to download INMET station data and estimate reference evapotranspiration (ETo) using FAO-56 for multiple stations and years:
 
@@ -96,32 +99,7 @@ df$eto <- daily_eto_FAO56(lat = df$latitude_degrees,
                           date = df$date)
 
 ```
-#  🚀 Usage Example design ETo calculation
 
-Here’s a quick example of how to download INMET station data and estimate reference evapotranspiration (ETo) using FAO-56, followed by the calculation of the design ETo.
-
-```r
-
-library(BrazilMet)
-stations <- BrazilMet::see_stations_info()
-
-df <- BrazilMet::download_AWS_INMET_daily(stations = "A001", start_date = "2000-01-01", end_date = "2025-03-31")
-
-df$eto <- daily_eto_FAO56(lat = df$latitude_degrees,
-                          tmin = df$tair_min_c,
-                          tmax = df$tair_max_c,
-                          tmean = df$tair_mean_c,
-                          Rs = df$sr_mj_m2,
-                          u2 = df$ws_2_m_s,
-                          Patm = df$patm_mb,
-                          RH_max = df$rh_max_porc,
-                          RH_min = df$rh_min_porc,
-                          z = df$altitude_m,
-                          date = df$date)
-
-BrazilMet::design_eto(eto_daily_data = df, percentile = .80)
-
-```
 🤝 Contributing
 
 We welcome contributions from the community! Whether it’s reporting issues, suggesting improvements, or submitting pull requests, your help is greatly appreciated.
